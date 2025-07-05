@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autochemix Oy - Palvelut</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- 
+    Narrative Plan:
+    1. Navigation: Sticky header with links to sections.
+    2. Home Section: Hook with slogan and a brief about Autochemix Oy.
+    3. Service Demand Section: Visualize business trends with a Line Chart.
+    4. Core Services Section: Visualize the service breakdown with a Donut Chart.
+    5. Why Choose Us Section: Showcase KPIs with "Big Number" cards.
+    6. Process Section: A simple flowchart using HTML/CSS.
+    7. Packing Tips Section: New section using Gemini API for packing advice.
+    8. Contact Section: Final, clear contact section (footer).
+
+    Visualization Choices (NO SVG, NO MERMAID JS):
+    - Service Breakdown -> Goal: Compare -> Donut Chart (Chart.js). Justification: Clearly shows service proportions.
+    - KPIs -> Goal: Inform -> "Big Number" Cards (HTML/Tailwind). Justification: High-impact and easily digestible.
+    - Seasonal Demand -> Goal: Show Change -> Line Chart (Chart.js). Justification: Best for showing trends over time.
+    - Process Flow -> Goal: Organize -> Flowchart (HTML/Tailwind). Justification: Clean, responsive, avoids prohibited libraries.
+
+    Chosen Color Palette: Red Style (Darker Text)
+    - Primary Red (accent): #D8315B
+    - Very Dark Red (text/footer/headers): #4A0404 (much darker than A52A2A)
+    - Light Red (background): #FFE4E1
+    - Accent Yellow: #FFD166
+    - White: #FFFFFF
+    -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFE4E1; /* Light Red Background */
+            scroll-behavior: smooth; /* Smooth scrolling for navigation */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flow-step {
+            border-color: #D8315B; /* Primary Red */
+            background-color: #FFFFFF;
+        }
+        .flow-arrow {
+            color: #D8315B; /* Primary Red */
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white for sticky effect */
+            backdrop-filter: blur(5px); /* Blur effect for sticky header */
+        }
+    </style>
+</head>
+<body class="text-[#4A0404]">
+
+    <header class="sticky-header shadow-md py-4">
+        <nav class="container mx-auto flex flex-col md:flex-row justify-between items-center px-4">
+            <a href="#home" class="text-2xl font-black text-[#4A0404] mb-2 md:mb-0">Autochemix Oy</a>
+            <div class="flex flex-wrap justify-center md:space-x-6 space-x-3">
+                <a href="#home" class="text-[#D8315B] hover:text-[#4A0404] font-bold">Etusivu</a>
+                <a href="#services" class="text-[#D8315B] hover:text-[#4A0404] font-bold">Palvelut</a>
+                <a href="#why-us" class="text-[#D8315B] hover:text-[#4A0404] font-bold">Miksi Me?</a>
+                <a href="#process" class="text-[#D8315B] hover:text-[#4A0404] font-bold">Prosessimme</a>
+                <a href="#packing-tips" class="text-[#D8315B] hover:text-[#4A0404] font-bold">Pakkausvinkit</a>
+                <a href="#contact" class="text-[#D8315B] hover:text-[#4A0404] font-bold">Ota Yhteyttä</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <section id="home" class="text-center mb-12 py-16">
+            <h1 class="text-4xl md:text-6xl font-black text-[#4A0404]">Autochemix Oy</h1>
+            <p class="text-xl md:text-2xl font-bold text-[#D8315B] mt-2">Palvelua, joka liikuttaa!</p>
+            <p class="max-w-3xl mx-auto mt-4 text-base md:text-lg">Me Autochemix Oy:llä ymmärrämme, että muutto on enemmän kuin vain tavaroiden siirtämistä. Se on uuden elämänvaiheen alku. Siksi tarjoamme kattavia ja luotettavia muutto- ja kuljetuspalveluita Helsingin ja Uudenmaan alueella, tehden siirtymästäsi mahdollisimman sujuvan.</p>
+            <!-- Изображение Muuttoauto удалено по запросу пользователя -->
+        </section>
+
+        <section id="services" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-center mb-4">Palveluidemme Kysyntä</h2>
+                <p class="text-center text-sm mb-4 max-w-xl mx-auto">Palveluidemme kysyntä vaihtelee vuoden mittaan, ja suurin osa muutoista keskittyy kesäkuukausille. Olemme valmiita palvelemaan sinua joustavasti vuodenajasta riippumatta, myös iltaisin ja viikonloppuisin.</p>
+                <div class="chart-container">
+                    <canvas id="demandChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-center mb-4">Ydinpalvelumme</h2>
+                 <p class="text-center text-sm mb-4 max-w-xl mx-auto">Tarjoamme laajan valikoiman palveluita, jotka kattavat kaikki muuttoon liittyvät tarpeet. Suurin osa toimeksiannoistamme liittyy muuttopalveluihin, mutta hoidamme ammattitaidolla myös muut kuljetukset, jätteenkäsittelyn ja siivoukset.</p>
+                <div class="chart-container h-[350px] md:h-[400px]">
+                    <canvas id="servicesChart"></canvas>
+                </div>
+            </div>
+            
+            <div id="why-us" class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold text-center mb-6">Miksi Valita Meidät?</h2>
+                <div class="space-y-6">
+                    <div class="text-center bg-gray-50 p-4 rounded-lg">
+                        <p class="text-5xl font-black text-[#D8315B]">98%</p>
+                        <p class="font-bold mt-2">Asiakastyytyväisyys</p>
+                        <p class="text-sm">Asiakkaidemme tyytyväisyys on meille kunnia-asia.</p>
+                    </div>
+                    <div class="text-center bg-gray-50 p-4 rounded-lg">
+                        <p class="text-5xl font-black text-[#D8315B]">24h</p>
+                        <p class="font-bold mt-2">Vastausaika</p>
+                        <p class="text-sm">Vastaamme tiedusteluihin nopeasti ja tehokkaasti.</p>
+                    </div>
+                    <div class="text-center bg-gray-50 p-4 rounded-lg">
+                        <p class="text-5xl font-black text-[#D8315B]">100%</p>
+                        <p class="font-bold mt-2">Luotettavuus</p>
+                        <p class="text-sm">Pidämme kiinni sovituista aikatauluista ja hinnoista.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="md:col-span-2 bg-white rounded-lg shadow-lg p-6">
+                <img src="https://placehold.co/800x300/4A0404/FFFFFF?text=Tyytyväiset+asiakkaat" alt="Tyytyväiset asiakkaat" class="mt-4 mx-auto rounded-lg shadow-lg w-full max-w-2xl">
+            </div>
+        </section>
+
+        <section id="process" class="bg-white rounded-lg shadow-lg p-6 mb-12">
+            <h2 class="text-2xl font-bold text-center mb-6">Palveluprosessimme</h2>
+            <p class="text-center text-sm mb-8 max-w-xl mx-auto">Olemme tehneet palvelun tilaamisesta helppoa ja vaivatonta. Selkeä prosessimme varmistaa, että tiedät aina, mitä odottaa.</p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <div class="flow-step text-center p-4 border-2 rounded-lg w-48">
+                    <p class="text-4xl font-black">1</p>
+                    <p class="font-bold mt-1">Ota Yhteyttä</p>
+                    <p class="text-xs">Soita tai lähetä sähköpostia.</p>
+                </div>
+                <div class="flow-arrow text-4xl transform md:rotate-0 rotate-90">→</div>
+                <div class="flow-step text-center p-4 border-2 rounded-lg w-48">
+                    <p class="text-4xl font-black">2</p>
+                    <p class="font-bold mt-1">Saat Tarjouksen</p>
+                    <p class="text-xs">Annamme selkeän tarjouksen.</p>
+                </div>
+                <div class="flow-arrow text-4xl transform md:rotate-0 rotate-90">→</div>
+                <div class="flow-step text-center p-4 border-2 rounded-lg w-48">
+                    <p class="text-4xl font-black">3</p>
+                    <p class="font-bold mt-1">Toteutus</p>
+                    <p class="text-xs">Hoidamme työn sovitusti.</p>
+                </div>
+                 <div class="flow-arrow text-4xl transform md:rotate-0 rotate-90">→</div>
+                <div class="flow-step text-center p-4 border-2 rounded-lg w-48">
+                    <p class="text-4xl font-black">4</p>
+                    <p class="font-bold mt-1">Valmis!</p>
+                    <p class="text-xs">Nauti uudesta kodistasi!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="packing-tips" class="bg-white rounded-lg shadow-lg p-6 mb-12">
+            <h2 class="text-2xl font-bold text-center mb-6">✨ Pakkausvinkit ✨</h2>
+            <p class="text-center text-sm mb-4 max-w-xl mx-auto">Tarvitsetko apua pakkaamisessa? Kysy meiltä vinkkejä tiettyjen esineiden pakkaamiseen!</p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <input type="text" id="packingItemInput" placeholder="Esim. Astiat, Kirjat, Vaatteet" class="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#D8315B] w-full md:w-1/2">
+                <button id="getPackingTipsBtn" class="bg-[#D8315B] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-[#A52A2A] transition duration-300 ease-in-out">
+                    Hae Pakkausvinkkejä
+                </button>
+            </div>
+            <div id="packingTipsResult" class="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200 min-h-[100px] flex items-center justify-center text-center text-gray-600">
+                Kirjoita yllä olevaan kenttään, mitä haluat pakata, ja paina "Hae Pakkausvinkkejä".
+            </div>
+            <div id="loadingIndicator" class="hidden text-center mt-4 text-[#D8315B] font-bold">Ladataan vinkkejä...</div>
+        </section>
+
+        <footer id="contact" class="text-center mt-12 bg-[#4A0404] text-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-black">Aloitetaan Yhteistyö!</h2>
+            <p class="mt-2 mb-4 max-w-2xl mx-auto">Oletko valmis muuttamaan? Ota yhteyttä, niin teemme sinulle tarjouksen!</p>
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
+                <div>
+                    <p class="font-bold">PUH:</p>
+                    <p class="text-xl font-bold text-[#FFD166]">04578767567</p>
+                </div>
+                <div>
+                    <p class="font-bold">SÄHKÖPOSTI:</p>
+                    <p class="text-xl font-bold text-[#FFD166]">autochemixfin@gmail.com</p>
+                </div>
+                <div>
+                    <p class="font-bold">AUKIOLOAJAT:</p>
+                    <p class="text-lg text-[#FFD166]">Ma-Pe: 8:00-23:00, La: 9:00-20:00</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const wrapLabel = (label, maxWidth) => {
+            if (label.length <= maxWidth) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + word).length > maxWidth) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            } else {
+              return label;
+            }
+        };
+
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#4A0404', /* Very Dark Red for legend labels */
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            }
+        };
+
+        const servicesCtx = document.getElementById('servicesChart').getContext('2d');
+        new Chart(servicesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sujuva Muutto', 'Nopeat Kuljetukset', 'Tehokas Jätekuljetus', 'Huolellinen Siivous'],
+                datasets: [{
+                    label: 'Palveluiden Osuus',
+                    data: [50, 25, 15, 10],
+                    backgroundColor: ['#D8315B', '#A52A2A', '#FFD166', '#8B0000'], /* Red, Dark Red, Yellow, Very Dark Red */
+                    borderColor: '#FFFFFF',
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            },
+            options: chartOptions
+        });
+
+        const demandCtx = document.getElementById('demandChart').getContext('2d');
+        new Chart(demandCtx, {
+            type: 'line',
+            data: {
+                labels: ['Tam', 'Hel', 'Maa', 'Huh', 'Tou', 'Kes', 'Hei', 'Elo', 'Syy', 'Lok', 'Mar', 'Jou'],
+                datasets: [{
+                    label: 'Muuttopalveluiden Kysyntä',
+                    data: [15, 18, 25, 35, 50, 80, 95, 85, 60, 40, 30, 22],
+                    borderColor: '#D8315B', /* Primary Red for line */
+                    backgroundColor: 'rgba(216, 49, 91, 0.1)', /* Light Red fill */
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                ...chartOptions,
+                 scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#4A0404' }, /* Very Dark Red for ticks */
+                        grid: { color: '#e0e0e0' }
+                    },
+                    x: {
+                        ticks: { color: '#4A0404' }, /* Very Dark Red for ticks */
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Gemini API Integration for Packing Tips
+        const getPackingTipsBtn = document.getElementById('getPackingTipsBtn');
+        const packingItemInput = document.getElementById('packingItemInput');
+        const packingTipsResult = document.getElementById('packingTipsResult');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        getPackingTipsBtn.addEventListener('click', async () => {
+            const itemToPack = packingItemInput.value.trim();
+            if (!itemToPack) {
+                packingTipsResult.innerHTML = '<p class="text-red-500">Syötä pakattava esine.</p>';
+                return;
+            }
+
+            loadingIndicator.classList.remove('hidden');
+            packingTipsResult.innerHTML = ''; // Clear previous results
+
+            let chatHistory = [];
+            const prompt = `Anna lyhyitä ja käytännöllisiä pakkausvinkkejä seuraavalle esineelle: "${itemToPack}". Vastaa suomeksi. Jäsennä vastaus selkeiksi, lyhyiksi kohdiksi.`;
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    packingTipsResult.innerHTML = `<p class="text-left">${text.replace(/\n/g, '<br>')}</p>`;
+                } else {
+                    packingTipsResult.innerHTML = '<p class="text-red-500">Vinkkien hakeminen epäonnistui. Yritä uudelleen.</p>';
+                }
+            } catch (error) {
+                console.error('Virhe Gemini API -kutsussa:', error);
+                packingTipsResult.innerHTML = '<p class="text-red-500">Virhe yhteydessä. Tarkista konsoli.</p>';
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
