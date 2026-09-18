@@ -29,6 +29,22 @@ Try these customer tracking IDs:
 
 The point of the demo is the shared workflow: one status change should make sense to the dispatcher, driver, and customer.
 
+## How the demo is structured
+
+The app keeps one job collection in browser storage and renders role-specific views over the same state:
+
+```text
+Dispatcher actions
+      ↓
+shared demo job state
+      ↓
+Driver status + evidence
+      ↓
+Customer timeline
+```
+
+This makes the important product behavior easy to inspect: assignment, status changes, chat, evidence, and customer visibility are parts of one workflow rather than separate mock screens.
+
 ## Technology
 
 - JavaScript
@@ -44,6 +60,10 @@ The point of the demo is the shared workflow: one status change should make sens
 The project is based on real logistics workflows at Autochemix Oy / Muuttobotti. It explores how order handling, delivery evidence, customer updates, and pricing can become clearer without forcing every user into the same interface.
 
 The original MVP was designed around React, Firebase Auth, Firestore realtime subscriptions and optional Gemini features. This repository packages the concept as a safe public demo while keeping the production path explicit.
+
+## Known limitations
+
+This is a portfolio demo, not a production dispatch system. It does not yet provide real authentication, server-side persistence, GPS/ETA data, uploaded delivery files, or automated test coverage. Those boundaries are deliberate: the public build stays safe to try while the production path remains visible.
 
 ## Production milestones
 
