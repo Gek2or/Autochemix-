@@ -10,6 +10,8 @@ Autochemix OS connects three workflows in one product prototype:
 
 ## Recruiter demo
 
+**[Open the live demo](https://gek2or.github.io/Autochemix-/)** · [View the source code](https://github.com/Gek2or/Autochemix-)
+
 The public build runs entirely in the browser. Demo data is stored in `localStorage`, so you can test every role without an account, Firebase credentials or exposed API keys.
 
 A useful five-minute walkthrough:
